@@ -220,19 +220,86 @@ function addEmployees() {
 
 };
 
-function viewDepartments() {
-
-};
-
-function viewRoles() {
-    
-};
-
 function viewEmployees() {
+    let query = 
+    "SELECT employee.employee_id, employee.first_name, employee.last_name, roles.title, roles.salary, department.dept_name FROM employee INNER JOIN roles ON (employee.roles_id = roles.roles_id) INNER JOIN departments ON (roles.dept_id = departments.dept_id)";
+    connection.query(query,function(err,res) {
+        if(err) throw err;
+        console.log("\nHere are the employees\n\n======================\n");
+        console.table(res);
+        console.log("======================\n");
+        runProgram();
+    })
 
 };
 
 function updateEmployeeRole() {
+    let query = "SELECT * FROM roles";
+    connection.query(query, function(err, rolesTable) {
+        if (err) throw err;
+        let allRoles = [];
+        rolesTable.forEach(role => {
+            allRoles.push(role.title);
+
+        });
+        const updateQuestions = [
+            {
+                name: "whichRole",
+                type: "list",
+                message: "Which role do you want to update?",
+                choices: allRoles
+            },
+            {
+                name: "whichUpdate",
+                type: "list",
+                message: "What would you like to update",
+                choices:["Salary", "Title"]
+                
+                }
+        ];
+        inq.prompt(updateQuestions).then(function(role) {
+            let roleID;
+            for (let i =0; i < allRoles.length; i++) {
+                if (role.whichRole === rolesTable[i].title) {
+                    roleID = rolesTable[i].roles_id;
+                }
+            }
+            if (role.whichUpdate === "Salary") {
+                inq.prompt(
+                    {
+                    name:"newSalary",
+                    type:"input",
+                    message: "What is the new salary?"
+                }
+                ).then(function(response) {
+                    let newSalary = response.newSalary;
+                    newSalary = parseINT(newSalary);
+                    
+                    let query = `UPDATE roles SET ? WHERE roles_id = ${roleID}`;
+                    connection.query(query, {salary: newSalary }, function(err) {
+                        if(err) throw err;
+                        runProgram();
+                    });
+                });
+            } else {
+                inq.promt ({
+                    name: "newTitle",
+                    type: "input",
+                    message: "What is the new title?"
+                }).then(function(response) {
+                    let newTitle = response.newTitle;
+                    let query = `UPDATE roles SET ? WHERE roles_id = ${roleID}`;
+                    connection.query(query, {title: newTitle }, function(err) {
+                        if(err) throw err;
+                        runProgram()
+                    });
+                });
+            }
+
+        });
+    })
 
 };
+
+runProgram();
 
