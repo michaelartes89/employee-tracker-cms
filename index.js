@@ -1,4 +1,4 @@
-const inq = require("inquirier");
+const inq = require("inquirer");
 const mysql = require("mysql");
 const cTable = require('console.table');
 
@@ -14,7 +14,7 @@ var connection = mysql.createConnection({
     user: "root",
 
     // Your password
-    password: "C0deK1ng!",
+    password: "",
     database: "employee_tracker_db"
 });
 
