@@ -166,6 +166,57 @@ function viewRoles() {
 };
 
 function addEmployees() {
+    let query = "SELECT * FROM roles";
+    connection.query(query,function(err,rolesTable) {
+        if (err) throw err;
+        let allRoles = [];
+
+        rolesTable.forEach(role => {
+            allRoles.push(role.title);
+        });
+        const employeeQuestions = [
+            {
+                name:"whichRole",
+                type:"list",
+                message:"which role will this employee have?",
+                choices: allRoles
+            },
+            {
+                name:"employeeFirstName",
+                type: "input",
+                message: "What is the employee's first name?"
+            },
+            {
+                name:"employeeLastName",
+                type:"input",
+                message:"What is the empoyeee's last name"
+            }
+        ];
+        inq.promt(employeeQuestions).then(function(employee) {
+            let roleID;
+            let firstName = employee.employeeFirstName;
+            let lastName = employee.employeeLastName;
+
+            for (let i= 0; i <allRoles.length; i++) {
+                if (employee.whichRole === rolesTable[i].title) {
+                    roleID = rolesTable[i].roles_id;
+                }
+            }
+            connection.query("INSERT INTO employee SET ?", 
+            {
+                first_name: firstName,
+                last_name: lastName,
+                roles_id: roleID
+
+            },
+            function(err) {
+                if(err) throw err;
+                runProgram();
+            }
+            );
+        
+        });
+    });
 
 };
 
