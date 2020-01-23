@@ -23,8 +23,9 @@ connection.connect(function (err) {
     if (err) throw err;
     
 });
-
+// Below Code-creates array of questions for inquirer 
 const questions = [
+    
     {
         name: "startingQuestions",
         type: "list",
@@ -44,7 +45,9 @@ const questions = [
     } 
 
 ];
+
 function runProgram() {
+    // Below Code- starts questions using inquirer and then uses switch statement to call the appropriate function based on the user initial choice
         inq.prompt(questions[0]).then(function(res) {
         switch(res.startingQuestions) {
             case "Add Department":
@@ -78,6 +81,7 @@ function runProgram() {
 };
 
 function addDepartment() {
+    // Below Code- uses inquirer to get department name from user and then add it to sql statement to update database
     inq.prompt({  
         name: "departmentName",
         type: "input",
@@ -93,7 +97,9 @@ function addDepartment() {
         runProgram();
     });
 };
+
 function viewDepartments() {
+    //Below Code- uses sql statement to select all departments from database and log the info to the console
 
     let query = "SELECT * FROM departments";
     connection.query(query,function(err,res) {
@@ -107,6 +113,11 @@ function viewDepartments() {
 };
 
 function addRoles() {
+   /* Below Code- uses sql statement to select all departments from the database,
+    next, it pushes the info to an array and allows the user to see it as a choice using inqurier,
+    after that, the user selects the department, they can input the title and salary using inquirer,
+    last, a for loop is used add the department ID and the information from the full result is added to the datacase with another sql statement */
+
     let query = "SELECT * FROM departments";
     connection.query(query,function(err, departmentTable) {
         if (err) throw err;
@@ -156,6 +167,7 @@ function addRoles() {
     })
 };
 function viewRoles() {
+    // Below Code- uses sql statment INNER JOIN to combine records from roles table and departments table and log to the console
     let query = 
     "SELECT roles.roles_id, roles.title,roles.salary,departments.dept_name FROM roles INNER JOIN departments ON (roles.dept_id = departments.dept_id)";
     connection.query(query,function(err,res) {
@@ -169,6 +181,10 @@ function viewRoles() {
 };
 
 function addEmployees() {
+    /* Below Code- uses sql statement to result all roles from the database,
+    next it pushes the info to an array and allows the users to select it with inquirer,
+    after that lets the user input the employee first name and last name with inquierer,
+    last, it uses  a for loop to set the role id and then another sql statement to insert the set of info the the db*/
     let query = "SELECT * FROM roles";
     connection.query(query,function(err,rolesTable) {
         if (err) throw err;
@@ -224,6 +240,7 @@ function addEmployees() {
 };
 
 function viewEmployees() {
+    // Below Code- uses sql statement with INNER JOIN to combine records and log info to console 
     let query = 
     "SELECT employee.employee_id, employee.first_name, employee.last_name, roles.title, roles.salary, departments.dept_name FROM employee INNER JOIN roles ON (employee.roles_id = roles.roles_id) INNER JOIN departments ON (roles.dept_id = departments.dept_id)";
     connection.query(query,function(err,res) {
@@ -237,6 +254,9 @@ function viewEmployees() {
 };
 
 function updateEmployeeRole() {
+    /* Below Code- uses sql statement to select all from roles table and push the role title to an array,
+        next, it lets the user choose the role with inquirer, and also gets the user's input to update salary or title,
+        after that, it user for loop to set the new role id and then uses another sql statement to UPDATE the info in the DB*/ 
    let query = "SELECT * FROM roles";
     connection.query(query, function(err,rolesTable) {
         if (err) throw err;
@@ -301,6 +321,8 @@ function updateEmployeeRole() {
     });
 
 };
+
+//RUN IT :)
 
 runProgram(); 
 
